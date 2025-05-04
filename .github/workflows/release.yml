@@ -35,6 +35,7 @@ jobs:
           echo "version_minor=$MINOR" >> $GITHUB_ENV
           echo "version_patch=$PATCH" >> $GITHUB_ENV
           FINAL_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "FINAL_VERSION=${FINAL_VERSION}" >> $GITHUB_ENV
           
       # - name: Check if tag is on main branch history
       #   run: |
@@ -51,12 +52,12 @@ jobs:
       - name: Create GitHub Release Page Entry
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ FINAL_VERSION }}
+          tag_name: ${{ env.FINAL_VERSION }}
           name: Release ${{ github.ref_name }}
           body: |
             Automated release for model version **${{ github.ref_name }}**.
 
-            **Model Artifact:** `${{ env.MODEL_FILENAME }}`
+            **Model Artifact:** `${{ env.CLASSIFIER_MODEL_FILENAME }}`
             **BoW Model Artifact:** `${{ env.BOW_MODEL_FILENAME }}`
             
           files: |
