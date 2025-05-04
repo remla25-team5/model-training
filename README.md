@@ -5,7 +5,7 @@ This repository contains the ML pipeline for training the restaurant sentiment a
 **Functionality:**
 *   Trains a sentiment classification model on restaurant reviews.
 *   Uses preprocessing steps defined in the `lib-ml` library.
-*   Outputs versioned model artifacts (`.joblib`, `.pkl`).
+*   Outputs versioned model artifacts (`.joblib`, `.pkl`). These models can be downloaded in code using the url: `https://github.com/remla25-team5/model-training/releases/download/<TAG>/<MODEL_FILENAME.joblib_or_pkl>`
 
 **Releasing:**
 *   Pushing a Git tag (e.g., `v1.0.0`) triggers a GitHub Action.
