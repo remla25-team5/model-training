@@ -61,8 +61,8 @@ jobs:
             **BoW Model Artifact:** `${{ env.BOW_MODEL_FILENAME }}`
 
             **Download the models from the following links:**
-            - [Classifier Model Artifact](${{ github.event.release.html_url }}/${{ env.CLASSIFIER_MODEL_FILENAME }})
-            - [BoW Model Artifact](${{ github.event.release.html_url }}/${{ env.BOW_MODEL_FILENAME }})
+            - Classifier Model Artifact: https://github.com/remla25-team5/model-training/releases/download/${{ env.FINAL_VERSION }}/${{ env.CLASSIFIER_MODEL_FILENAME }}
+            - BoW Model Artifact: https://github.com/remla25-team5/model-training/releases/download/${{ env.FINAL_VERSION }}/${{ env.BOW_MODEL_FILENAME }}
             
           files: |
             ${{ env.MODEL_DIRECTORY }}/${{ env.CLASSIFIER_MODEL_FILENAME }}
