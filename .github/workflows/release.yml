@@ -1,0 +1,65 @@
+name: Create Model Release
+
+
+on:
+  push:
+    tags:
+      ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: write
+
+jobs: 
+  release_mdoel:
+    name: Check Tag and Create Release Entry
+    runs-on: ubuntu-latest
+    env:
+      MODEL_NAME: c2_Classifier_Sentiment_Model.joblib
+      MODEL_PATH: ./models/${{ env.MODEL_NAME }}
+      BOW_MODEL_NAME: c1_BoW_Sentiment_Model.pkl
+      BOW_MODEL_PATH: ./models/${{ env.BOW_MODEL_NAME }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Parse version from tag
+        run: |
+          VERSION=${GITHUB_REF:11}
+          MAJOR=$(echo "$VERSION" | cut -d . -f 1)
+          MINOR=$(echo "$VERSION" | cut -d . -f 2)
+          PATCH=$(echo "$VERSION" | cut -d . -f 3)
+          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "version_major=$MAJOR" >> $GITHUB_ENV
+          echo "version_minor=$MINOR" >> $GITHUB_ENV
+          echo "version_patch=$PATCH" >> $GITHUB_ENV
+          FINAL_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          
+      - name: Check if tag is on main branch history
+        run: |
+          echo "Checking if tag ${{ github.ref_name }} (commit $GITHUB_SHA) is on the main branch..."
+          git fetch origin main:refs/remotes/origin/main
+          if git merge-base --is-ancestor $GITHUB_SHA origin/main; then
+            echo "Tag ${{ github.ref_name }} is on the main branch history. Acknowledged as release point."
+          else
+            echo "Tag ${{ github.ref_name }} is NOT on the main branch history. Ignoring tag."
+            exit 1
+          fi
+        shell: bash
+
+      - name: Create GitHub Release Page Entry
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ FINAL_VERSION }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Automated release for model version **${{ github.ref_name }}**.
+
+            **Model Artifact:** `${{ env.MODEL_FILENAME }}`
+            **BoW Model Artifact:** `${{ env.BOW_MODEL_FILENAME }}`
+            
+          files: |
+            ${{ env.MODEL_PATH }}${{ env.MODEL_FILENAME }}
+            ${{ env.BOW_MODEL_PATH }}${{ env.BOW_MODEL_FILENAME }}

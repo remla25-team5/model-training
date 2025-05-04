@@ -1,0 +1,5 @@
+lib-ml @ git+https://github.com/remla25-team5/lib-ml.git@0.0.0
+pandas
+numpy
+joblib
+scikit-learn
