@@ -37,17 +37,17 @@ jobs:
           FINAL_VERSION="${MAJOR}.${MINOR}.${PATCH}"
           echo "FINAL_VERSION=${FINAL_VERSION}" >> $GITHUB_ENV
           
-      # - name: Check if tag is on main branch history
-      #   run: |
-      #     echo "Checking if tag ${{ github.ref_name }} (commit $GITHUB_SHA) is on the main branch..."
-      #     git fetch origin main:refs/remotes/origin/main
-      #     if git merge-base --is-ancestor $GITHUB_SHA origin/main; then
-      #       echo "Tag ${{ github.ref_name }} is on the main branch history. Acknowledged as release point."
-      #     else
-      #       echo "Tag ${{ github.ref_name }} is NOT on the main branch history. Ignoring tag."
-      #       exit 1
-      #     fi
-      #   shell: bash
+      - name: Check if tag is on main branch history
+        run: |
+          echo "Checking if tag ${{ github.ref_name }} (commit $GITHUB_SHA) is on the main branch..."
+          git fetch origin main:refs/remotes/origin/main
+          if git merge-base --is-ancestor $GITHUB_SHA origin/main; then
+            echo "Tag ${{ github.ref_name }} is on the main branch history. Acknowledged as release point."
+          else
+            echo "Tag ${{ github.ref_name }} is NOT on the main branch history. Ignoring tag."
+            exit 1
+          fi
+        shell: bash
 
       - name: Create GitHub Release Page Entry
         uses: softprops/action-gh-release@v2
