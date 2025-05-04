@@ -14,10 +14,9 @@ jobs:
     name: Check Tag and Create Release Entry
     runs-on: ubuntu-latest
     env:
-      MODEL_NAME: c2_Classifier_Sentiment_Model.joblib
-      MODEL_PATH: ./models/${{ env.MODEL_NAME }}
-      BOW_MODEL_NAME: c1_BoW_Sentiment_Model.pkl
-      BOW_MODEL_PATH: ./models/${{ env.BOW_MODEL_NAME }}
+      CLASSIFIER_MODEL_FILENAME: c2_Classifier_Sentiment_Model.joblib
+      BOW_MODEL_FILENAME: c1_BoW_Sentiment_Model.pkl
+      MODEL_DIRECTORY: ./models
 
     steps:
       - name: Checkout code
@@ -61,5 +60,7 @@ jobs:
             **BoW Model Artifact:** `${{ env.BOW_MODEL_FILENAME }}`
             
           files: |
-            ${{ env.MODEL_PATH }}${{ env.MODEL_FILENAME }}
-            ${{ env.BOW_MODEL_PATH }}${{ env.BOW_MODEL_FILENAME }}
+            ${{ env.MODEL_DIRECTORY }}/${{ env.CLASSIFIER_MODEL_FILENAME }}
+            ${{ env.MODEL_DIRECTORY }}/${{ env.BOW_MODEL_FILENAME }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
