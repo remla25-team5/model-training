@@ -52,7 +52,7 @@ jobs:
       - name: Create GitHub Release Page Entry
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ FINAL_VERSION }}
+          tag_name: ${{ env.FINAL_VERSION }}
           name: Release ${{ github.ref_name }}
           body: |
             Automated release for model version **${{ github.ref_name }}**.
