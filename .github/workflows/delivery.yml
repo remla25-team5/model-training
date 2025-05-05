@@ -1,0 +1,28 @@
+name: Model-Training Delivery
+
+on: push
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  delivery:
+    name: Delivery
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump version and push tag
+        id: bump_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: 'NONE'
+          pre_release_branches: '.*'
+          default_prerelease_bump: patch
+          append_to_pre_release_tag: pre
+          tag_prefix: v
