@@ -33,9 +33,10 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: main
+          release_branches: '.*'
           pre_release_branches: 'NONE'
-          default_bump: ${{ inputs.bump_level }}
+          # default_bump: ${{ inputs.bump_level }}
+          default_bump: patch
           tag_prefix: v
 
       - name: Create GitHub Release Page Entry
@@ -63,7 +64,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: 'NONE'
-          pre_release_branches: main
+          pre_release_branches: '.*'
           default_prerelease_bump: patch
           append_to_pre_release_tag: pre
           tag_prefix: v
