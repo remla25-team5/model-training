@@ -31,7 +31,7 @@ uv pip install .
 
 Now you have a .venv folder which contains the virtual environment (and it's activated for you), use 
 ```bash
-  python model_training/download.py
+  python model_training/dataset.py
 ```
 To download from Google Cloud Bucket, this is just a single step of the entire pipeline.
 

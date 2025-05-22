@@ -64,8 +64,8 @@ def GaussianNB_Classify(data, labels, cv_folds):
 
 
 def main(
-    data_path: Path = Path(__file__).parent.parent.parent / "data/processed/X.pkl",
-    labels_path: Path = Path(__file__).parent.parent.parent / "data/processed/y.pkl",
+    data_path: Path = Path(__file__).parent.parent.parent / "data/processed/X_train.pkl",
+    labels_path: Path = Path(__file__).parent.parent.parent / "data/processed/y_train.pkl",
     model_out_path: Path = Path(__file__).parent.parent.parent / "models/c2_Classifier_Sentiment_Model.joblib",
     metrics_path: Path = Path(__file__).parent.parent.parent / "metrics.json",
 ):
