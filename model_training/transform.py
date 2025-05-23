@@ -16,6 +16,11 @@ def main(
     test_size: float = 0.2,
     random_state: int = 42,
 ):
+    """
+    Processes raw data, fits a BoW vectorizer, and creates train/test splits.
+
+    Saves the fitted vectorizer and all data splits to specified output paths.
+    """
     # Load and preprocess
     dataset = pd.read_csv(input_path, delimiter='\t', quoting=3)
     corpus, labels = preprocess_dataset(dataset)
