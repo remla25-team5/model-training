@@ -45,25 +45,15 @@ to download from Google Cloud Bucket, this is just a single step of the entire p
 
 ### Using DVC for ML Configuration Management
 
-To run the pipeline with DVC (part of the `uv.lock` requirements), you should run:
-
-```bash
-dvc init
-```
-
-This project uses Google Drive as a remote storage for DVC. To set up the DVC remote, you need to run the following command:
-
-```bash
-dvc remote add -d group5-remote gdrive://1WAu2K8Sw9EJdAgQEzyFpHkkMBF9AnxWM
-```
-
-Then, you have to set up the credentials for the remote storage. Since these credentials cannot be publicly shared for privacy reasons, you can send an email to K.Hoxha@student.tudelft.nl and request the credentials. You will also have to provide your google account email address so that the GDrive can be shared with you.
+This project uses Google Drive as a remote storage for DVC. You have to set up the credentials for the remote storage. Since these credentials cannot be publicly shared for privacy reasons, you can send an email to K.Hoxha@student.tudelft.nl and request the credentials. You will also have to provide your google account email address so that the GDrive can be shared with you.
 
 Once you have the credentials, you can set them up in your local DVC configuration. You can do this by replacing `<client-id>` and `<secret>` with the real values, and running:
 
 ```bash
 dvc remote modify group5-remote gdrive_client_id '<client-id>' --local
+```
 
+```bash
 dvc remote modify group5-remote gdrive_client_secret '<secret>' --local
 ```
 
@@ -73,7 +63,7 @@ Finally, you can run the following command to pull the data from the remote stor
 dvc pull
 ```
 
-This will prompt you to log in to your Google account and authorize DVC to access your Google Drive. Once you have authorized DVC, it will download the data from the remote storage to your local machine.
+This will prompt you to log in to your Google account. Proceed to the page even though it is labelled as 'unsafe' and authorize DVC to access your Google Drive. Once you have authorized DVC, it will download the data from the remote storage to your local machine.
 
 To run the pipeline, you can use the following command:
 
