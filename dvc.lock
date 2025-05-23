@@ -1,0 +1,18 @@
+schema: '2.0'
+stages:
+  get_data:
+    cmd: python model_training/dataset.py
+    deps:
+    - path: model_training/dataset.py
+      hash: md5
+      md5: 67f9519942e59a8e1141b2ea0c645bf9
+      size: 1214
+    outs:
+    - path: data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      hash: md5
+      md5: 8104bfc2f44d60939e1fd3208a187500
+      size: 55587
+    - path: data/raw/a2_RestaurantReviews_FreshDump.tsv
+      hash: md5
+      md5: d80c66c690cfd13bfd8798a484294359
+      size: 6605

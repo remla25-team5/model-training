@@ -1,0 +1,8 @@
+stages:
+  get_data:
+    cmd: python model_training/dataset.py
+    deps:
+    - model_training/dataset.py
+    outs:
+    - data/raw/a1_RestaurantReviews_HistoricDump.tsv
+    - data/raw/a2_RestaurantReviews_FreshDump.tsv
