@@ -72,3 +72,27 @@ stages:
       hash: md5
       md5: f317774f9eb79b7665097382c7abc1af
       size: 46328
+  evaluate_model:
+    cmd: python model_training/evaluation.py
+    deps:
+    - path: data/processed/X_test.pkl
+      hash: md5
+      md5: dede17b67e2f665a34b8dfebd9fe2c6d
+      size: 2044963
+    - path: data/processed/y_test.pkl
+      hash: md5
+      md5: 55e6b862941d7e76dfd9a65e1f809c41
+      size: 1591
+    - path: model_training/evaluation.py
+      hash: md5
+      md5: 193398ba1a719c4e8281b6fcb872e8b2
+      size: 2307
+    - path: models/c2_Classifier_Sentiment_Model.joblib
+      hash: md5
+      md5: f317774f9eb79b7665097382c7abc1af
+      size: 46328
+    outs:
+    - path: metrics_eval.json
+      hash: md5
+      md5: f456e4c9eb43c9c7bd69d029f3383c72
+      size: 992
