@@ -1,0 +1,5 @@
+[core]
+    analytics = false
+    remote = group5-remote
+['remote "group5-remote"']
+    url = gdrive://1WAu2K8Sw9EJdAgQEzyFpHkkMBF9AnxWM

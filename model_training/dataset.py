@@ -5,14 +5,12 @@ from loguru import logger
 from tqdm import tqdm
 import typer
 
-from model_training.config import RAW_DATA_DIR
-
 app = typer.Typer()
 
 
 @app.command()
 def main(
-    output_dir: Path = RAW_DATA_DIR,
+    output_dir: Path = Path(__file__).resolve().parents[1] / "data" / "raw",
 ):
     """
     Downloads the two restaurant review datasets from the public GCS bucket

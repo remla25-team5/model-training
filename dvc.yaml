@@ -1,0 +1,38 @@
+stages:
+  get_data:
+    cmd: python model_training/dataset.py
+    deps:
+    - model_training/dataset.py
+    outs:
+    - data/raw/a1_RestaurantReviews_HistoricDump.tsv
+    - data/raw/a2_RestaurantReviews_FreshDump.tsv
+  preprocess_data:
+    cmd: python model_training/transform.py
+    deps:
+    - data/raw/a1_RestaurantReviews_HistoricDump.tsv
+    - model_training/transform.py
+    outs:
+    - data/processed/X_test.pkl
+    - data/processed/X_train.pkl
+    - data/processed/y_test.pkl
+    - data/processed/y_train.pkl
+    - models/c1_BoW_Sentiment_Model.pkl
+  train_model:
+    cmd: python model_training/modeling/train.py
+    deps:
+    - data/processed/X_train.pkl
+    - data/processed/y_train.pkl
+    - model_training/modeling/train.py
+    outs:
+    - metrics.json
+    - models/c2_Classifier_Sentiment_Model.joblib
+  evaluate_model:
+    cmd: python model_training/evaluation.py
+    deps:
+    - data/processed/X_test.pkl
+    - data/processed/y_test.pkl
+    - model_training/evaluation.py
+    - models/c2_Classifier_Sentiment_Model.joblib
+    metrics:
+    - metrics_eval.json:
+        cache: true
