@@ -16,3 +16,35 @@ stages:
       hash: md5
       md5: d80c66c690cfd13bfd8798a484294359
       size: 6605
+  preprocess_data:
+    cmd: python model_training/transform.py
+    deps:
+    - path: data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      hash: md5
+      md5: 8104bfc2f44d60939e1fd3208a187500
+      size: 55587
+    - path: model_training/transform.py
+      hash: md5
+      md5: 3bf34d268ba49fbd56278ae1ebade840
+      size: 2218
+    outs:
+    - path: data/processed/X_test.pkl
+      hash: md5
+      md5: dede17b67e2f665a34b8dfebd9fe2c6d
+      size: 2044963
+    - path: data/processed/X_train.pkl
+      hash: md5
+      md5: c060476e44abb1d32da1ee96dce167ac
+      size: 8179364
+    - path: data/processed/y_test.pkl
+      hash: md5
+      md5: 55e6b862941d7e76dfd9a65e1f809c41
+      size: 1591
+    - path: data/processed/y_train.pkl
+      hash: md5
+      md5: b06d52b1cf45a947d0fd8e9501b19afe
+      size: 5912
+    - path: models/c1_BoW_Sentiment_Model.pkl
+      hash: md5
+      md5: e18732107dcfd5a5b75e53cfa6c0e370
+      size: 39435
