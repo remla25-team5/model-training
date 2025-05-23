@@ -48,3 +48,27 @@ stages:
       hash: md5
       md5: e18732107dcfd5a5b75e53cfa6c0e370
       size: 39435
+  train_model:
+    cmd: python model_training/modeling/train.py
+    deps:
+    - path: data/processed/X_train.pkl
+      hash: md5
+      md5: c060476e44abb1d32da1ee96dce167ac
+      size: 8179364
+    - path: data/processed/y_train.pkl
+      hash: md5
+      md5: b06d52b1cf45a947d0fd8e9501b19afe
+      size: 5912
+    - path: model_training/modeling/train.py
+      hash: md5
+      md5: 435a7e02c165258615fa1f671fdb6911
+      size: 2953
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: c27160cbe74180d3cf015a7d9f9ce934
+      size: 20
+    - path: models/c2_Classifier_Sentiment_Model.joblib
+      hash: md5
+      md5: f317774f9eb79b7665097382c7abc1af
+      size: 46328
