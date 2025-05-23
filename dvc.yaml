@@ -33,5 +33,6 @@ stages:
     - data/processed/y_test.pkl
     - model_training/evaluation.py
     - models/c2_Classifier_Sentiment_Model.joblib
-    outs:
-    - metrics_eval.json
+    metrics:
+    - metrics_eval.json:
+        cache: true
