@@ -30,6 +30,9 @@ dependencies = [
     "numpy",
     "joblib",
     "scikit-learn",
+    "pylint>=3.3.7",
+    "pytest-cov>=6.1.1",
+    "bandit>=1.8.3",
 ]
 requires-python = "~=3.10.0"
 
