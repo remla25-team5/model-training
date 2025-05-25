@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 
 from lib_ml.preprocessing import preprocess_dataset
 
+
 def main(
     input_path: Path = Path(__file__).parent.parent / "data/raw/a1_RestaurantReviews_HistoricDump.tsv",
     vectorizer_path: Path = Path(__file__).parent.parent / "models/c1_BoW_Sentiment_Model.pkl",
@@ -57,6 +58,7 @@ def main(
     print(f"Saved training labels to {train_labels_path}")
     print(f"Saved test features to {test_data_path}")
     print(f"Saved test labels to {test_labels_path}")
+
 
 if __name__ == "__main__":
     main()
