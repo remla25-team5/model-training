@@ -1,17 +1,13 @@
-name: CI
+name: Continuous Testing
 on: [push]
 permissions:
   contents: write
 jobs:
-  Explore-GitHub-Actions:
+  Continuous-Testing:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-#      - name: Set up Python
-#        uses: actions/setup-python@v3
-#        with:
-#          python-version: "3.10"
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
@@ -22,22 +18,10 @@ jobs:
           python-version-file: "pyproject.toml"
       - name: Install the project
         run: uv sync --locked --all-extras --dev
-      - name: Install dependencies
-        run: |
-#          python -m pip install --upgrade pip
-
-#          pip install uv
-#          uv sync
-
-#          pip install pylint flake8 pytest pytest-cov bandit
-#          pip install -r requirements.txt
-#          pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
       - name: Analysing the code with pylint
         run: |
           uv run pylint $(git ls-files '*.py') --output-format=json2:somefile.json,colorized
         continue-on-error: true #
-#          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-#          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: pylint score
         run: |
           PYLINT_SCORE=$(cat somefile.json | jq -r '.statistics.score')
@@ -47,31 +31,19 @@ jobs:
           uv run flake8 $(git ls-files '*.py') --count --select=E9,F63,F7,F82 --show-source --statistics
           uv run flake8 $(git ls-files '*.py') --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Run Bandit
-        #        run: bandit -r .
         run: uv run bandit -r $(git ls-files '*.py')
         continue-on-error: true #
-#      - name: Run tests
-#        run: uv run pytest tests
       - name: Test with pytest
-#          pytest
-#          uv run pytest
         run: |
-          uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=xml --cov-report=html --cov-report=json
+          uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json
           COVERAGE=$(cat coverage.json | jq -r '.totals.percent_covered_display')
           echo "coverage=$COVERAGE" >> $GITHUB_ENV
-      - name: Upload pytest test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: pytest-results
-          path: junit/test-results.xml
-        # Use always() to always run this step to publish test results when there are test failures
-        if: ${{ always() }}
       - name: Commit report
         run: |
           sed -E -i 's/.*!\[pylint score\]\(https:\/\/img\.shields\.io\/badge\/pylint%20score-[0-9.]+-green\.svg\)$/![pylint score](https:\/\/img.shields.io\/badge\/pylint%20score-${{ env.pylint_score }}-green.svg)/' README.md
           sed -E -i 's/.*!\[test coverage\]\(https:\/\/img\.shields\.io\/badge\/test%20coverage-[0-9]+%25-green\.svg\)$/![test coverage](https:\/\/img.shields.io\/badge\/test%20coverage-${{ env.coverage }}%25-green.svg)/' README.md
-          git config --global user.name 'Your Name'
-          git config --global user.email 'your-username@users.noreply.github.com'
+          git config --global user.name 'remla25-team5'
+          git config --global user.email 'remla25-team5@users.noreply.github.com'
           git add README.md
-          git commit -m "Automated report"
+          git commit -m "README"
           git push
