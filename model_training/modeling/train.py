@@ -22,7 +22,7 @@ def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds):
     """
     pipeline = Pipeline([('classifier', classifier)])
 
-    cv = StratifiedKFold(n_splits=cv_folds, shuffle=True)
+    cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
     scoring = 'accuracy'
 
     grid_search = GridSearchCV(
