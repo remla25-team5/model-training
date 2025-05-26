@@ -75,5 +75,5 @@ jobs:
           git config --global user.name 'remla25-team5'
           git config --global user.email 'remla25-team5@users.noreply.github.com'
           git add README.md
-          git commit -m "README"
+          git commit -m "README" || echo "Nothing to commit"
           git push
