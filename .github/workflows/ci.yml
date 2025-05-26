@@ -1,0 +1,49 @@
+name: Continuous Testing
+on: [push]
+permissions:
+  contents: write
+jobs:
+  Continuous-Testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.7.8"
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+      - name: Analysing the code with pylint
+        run: |
+          uv run pylint $(git ls-files '*.py') --output-format=json2:somefile.json,colorized
+        continue-on-error: true #
+      - name: pylint score
+        run: |
+          PYLINT_SCORE=$(cat somefile.json | jq -r '.statistics.score')
+          echo "pylint_score=$PYLINT_SCORE" >> $GITHUB_ENV
+      - name: Lint with flake8
+        run: |
+          uv run flake8 $(git ls-files '*.py') --count --select=E9,F63,F7,F82 --show-source --statistics
+          uv run flake8 $(git ls-files '*.py') --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Run Bandit
+        run: uv run bandit -r $(git ls-files '*.py')
+        continue-on-error: true #
+      - name: Test with pytest
+        run: |
+          uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json
+          COVERAGE=$(cat coverage.json | jq -r '.totals.percent_covered_display')
+          echo "coverage=$COVERAGE" >> $GITHUB_ENV
+      - name: Commit report
+        run: |
+          sed -E -i 's/.*!\[pylint score\]\(https:\/\/img\.shields\.io\/badge\/pylint%20score-[0-9.]+-green\.svg\)$/![pylint score](https:\/\/img.shields.io\/badge\/pylint%20score-${{ env.pylint_score }}-green.svg)/' README.md
+          sed -E -i 's/.*!\[test coverage\]\(https:\/\/img\.shields\.io\/badge\/test%20coverage-[0-9]+%25-green\.svg\)$/![test coverage](https:\/\/img.shields.io\/badge\/test%20coverage-${{ env.coverage }}%25-green.svg)/' README.md
+          git config --global user.name 'remla25-team5'
+          git config --global user.email 'remla25-team5@users.noreply.github.com'
+          git add README.md
+          git commit -m "README"
+          git push

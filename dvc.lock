@@ -1,0 +1,98 @@
+schema: '2.0'
+stages:
+  get_data:
+    cmd: python model_training/dataset.py
+    deps:
+    - path: model_training/dataset.py
+      hash: md5
+      md5: 67f9519942e59a8e1141b2ea0c645bf9
+      size: 1214
+    outs:
+    - path: data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      hash: md5
+      md5: 8104bfc2f44d60939e1fd3208a187500
+      size: 55587
+    - path: data/raw/a2_RestaurantReviews_FreshDump.tsv
+      hash: md5
+      md5: d80c66c690cfd13bfd8798a484294359
+      size: 6605
+  preprocess_data:
+    cmd: python model_training/transform.py
+    deps:
+    - path: data/raw/a1_RestaurantReviews_HistoricDump.tsv
+      hash: md5
+      md5: 8104bfc2f44d60939e1fd3208a187500
+      size: 55587
+    - path: model_training/transform.py
+      hash: md5
+      md5: 3bf34d268ba49fbd56278ae1ebade840
+      size: 2218
+    outs:
+    - path: data/processed/X_test.pkl
+      hash: md5
+      md5: dede17b67e2f665a34b8dfebd9fe2c6d
+      size: 2044963
+    - path: data/processed/X_train.pkl
+      hash: md5
+      md5: c060476e44abb1d32da1ee96dce167ac
+      size: 8179364
+    - path: data/processed/y_test.pkl
+      hash: md5
+      md5: 55e6b862941d7e76dfd9a65e1f809c41
+      size: 1591
+    - path: data/processed/y_train.pkl
+      hash: md5
+      md5: b06d52b1cf45a947d0fd8e9501b19afe
+      size: 5912
+    - path: models/c1_BoW_Sentiment_Model.pkl
+      hash: md5
+      md5: e18732107dcfd5a5b75e53cfa6c0e370
+      size: 39435
+  train_model:
+    cmd: python model_training/modeling/train.py
+    deps:
+    - path: data/processed/X_train.pkl
+      hash: md5
+      md5: c060476e44abb1d32da1ee96dce167ac
+      size: 8179364
+    - path: data/processed/y_train.pkl
+      hash: md5
+      md5: b06d52b1cf45a947d0fd8e9501b19afe
+      size: 5912
+    - path: model_training/modeling/train.py
+      hash: md5
+      md5: 435a7e02c165258615fa1f671fdb6911
+      size: 2953
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: c27160cbe74180d3cf015a7d9f9ce934
+      size: 20
+    - path: models/c2_Classifier_Sentiment_Model.joblib
+      hash: md5
+      md5: f317774f9eb79b7665097382c7abc1af
+      size: 46328
+  evaluate_model:
+    cmd: python model_training/evaluation.py
+    deps:
+    - path: data/processed/X_test.pkl
+      hash: md5
+      md5: dede17b67e2f665a34b8dfebd9fe2c6d
+      size: 2044963
+    - path: data/processed/y_test.pkl
+      hash: md5
+      md5: 55e6b862941d7e76dfd9a65e1f809c41
+      size: 1591
+    - path: model_training/evaluation.py
+      hash: md5
+      md5: 193398ba1a719c4e8281b6fcb872e8b2
+      size: 2307
+    - path: models/c2_Classifier_Sentiment_Model.joblib
+      hash: md5
+      md5: f317774f9eb79b7665097382c7abc1af
+      size: 46328
+    outs:
+    - path: metrics_eval.json
+      hash: md5
+      md5: f456e4c9eb43c9c7bd69d029f3383c72
+      size: 992
