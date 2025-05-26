@@ -1,6 +1,6 @@
 ![test coverage](https://img.shields.io/badge/test%20coverage-30%25-green.svg)
-![pylint score](https://img.shields.io/badge/pylint%20score-9.96-green.svg)
-![flake8](https://img.shields.io/badge/flake8-0%20issues-brightgreen.svg)
+![pylint score](https://img.shields.io/badge/pylint%20score-10.0-green.svg)
+![flake8](https://img.shields.io/badge/flake8-3%20issues-yellowgreen.svg)
 
 # Model-training: Restaurant Sentiment Model Training
 
