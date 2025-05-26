@@ -1,11 +1,12 @@
 import numpy as np
 from sklearn.utils.validation import check_is_fitted
-from model_training.modeling.train import create_pipeline_and_train, GaussianNB_Classify
 from sklearn.naive_bayes import GaussianNB
+from model_training.modeling.train import create_pipeline_and_train, gaussiannb_classify
 
 # Test  ML infrastructure Infra 2: Model specification code is unit tested
 
 def test_create_pipeline_and_train_basic():
+    """Test the basic functionality of the create_pipeline_and_train function."""
     np.random.seed(42)
     X = np.random.rand(20, 5)
     y = np.random.randint(0, 2, size=20)
@@ -15,10 +16,11 @@ def test_create_pipeline_and_train_basic():
     assert 0.0 <= score <= 1.0
     check_is_fitted(estimator)
 
-def test_GaussianNB_Classify_basic():
+def test_gaussiannb_classify_basic():
+    """Test the basic functionality of the gaussiannb_classify function."""
     np.random.seed(42)
     X = np.random.rand(20, 5)
     y = np.random.randint(0, 2, size=20)
-    score, estimator = GaussianNB_Classify(X, y, cv_folds=2)
+    score, estimator = gaussiannb_classify(X, y, cv_folds=2)
     assert 0.0 <= score <= 1.0
     check_is_fitted(estimator)
