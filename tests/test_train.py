@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.utils.validation import check_is_fitted
 from sklearn.naive_bayes import GaussianNB
 from model_training.modeling.train import create_pipeline_and_train, gaussiannb_classify
+# bandit: disable=B101  (asserts are fine in this test)
 
 # Test  ML infrastructure Infra 2: Model specification code is unit tested
 

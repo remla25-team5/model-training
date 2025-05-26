@@ -10,9 +10,13 @@ exclude_dirs: [
   "docs",
   "examples",
   "scripts",
-  ".git"
+  ".git",
 ]
 
 skips: [
   "B403", "B301" # Skipping pickle warnings, cause we need to use pickle for model serialization.
 ]
+
+assert_used:
+  skips:
+    - "*/tests/*" # Allowing assert_used in tests, as they are not production code.
