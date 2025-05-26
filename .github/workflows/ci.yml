@@ -29,7 +29,7 @@ jobs:
       - name: Lint with flake8
         run: |
           FLAKE8_OUTPUT_FILE="flake8_output.txt"
-          uv run flake8 --config=.flake8 --count --format='%(row)d:%(col)d: %(code)s %(text)s' > "$FLAKE8_OUTPUT_FILE" || true
+          uv run flake8 --config=.flake8 --format='%(row)d:%(col)d: %(code)s %(text)s' > "$FLAKE8_OUTPUT_FILE" || true
           FLAKE8_ISSUES=$(wc -l < "$FLAKE8_OUTPUT_FILE" | xargs)
           echo "Flake8 found $FLAKE8_ISSUES issue(s)."
 
