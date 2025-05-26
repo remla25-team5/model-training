@@ -1,0 +1,9 @@
+[flake8]
+max-line-length = 120
+exclude = __pycache__,.git,__init__.py,.venv,.env,data,notebooks,docs,build,dist,models,references,reports
+max-complexity = 12
+import-order-style = google
+
+per-file-ignores =
+    # Allow F401 (unused import) in __init__.py files.
+    */__init__.py: F401, F403

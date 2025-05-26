@@ -5,7 +5,7 @@ TARGETS_RANDOMNESS = {
     "StratifiedKFold": {
         "type": "class",
         "seed_param": "random_state",
-        "conditions": {"shuffle": True} 
+        "conditions": {"shuffle": True}
     },
     "KFold": {
         "type": "class",
@@ -14,7 +14,7 @@ TARGETS_RANDOMNESS = {
     },
     "ShuffleSplit": {"type": "class", "seed_param": "random_state"},
     "StratifiedShuffleSplit": {"type": "class", "seed_param": "random_state"},
-    "train_test_split": {"type": "function", "seed_param": "random_state"}, 
+    "train_test_split": {"type": "function", "seed_param": "random_state"},
 
     "RandomForestClassifier": {"type": "class", "seed_param": "random_state"},
     "RandomForestRegressor": {"type": "class", "seed_param": "random_state"},
@@ -78,9 +78,9 @@ TARGETS_RANDOMNESS = {
     "DecisionTreeRegressor": {"type": "class", "seed_param": "random_state"},
 }
 
+
 class RandomStateChecker(BaseChecker):
     """Warn when certain classes/functions are used without a random state parameter, disabling reproducibility."""
-
 
     name = "random_state_checker"
     msgs = {
@@ -102,6 +102,31 @@ class RandomStateChecker(BaseChecker):
                     return keyword.value.value
         return None
 
+    def _send_message(self, node, class_name, expected_seed_param):
+        """Helper to send a message when a class/function is used without the required random state parameter."""
+        self.add_message(
+            "missing-random-state",
+            node=node,
+            args=(class_name, expected_seed_param),
+        )
+
+    def _compare_conditions(self, node, expected_conditions):
+        """Helper to check if the conditions for a class/function are met."""
+        conditions_met = False
+        num_conditions_checked = 0
+        num_conditions_satisfied = 0
+        for cond_key, cond_value in expected_conditions.items():
+            num_conditions_checked += 1
+            actual_value = self._get_keyword_value(node.keywords, cond_key)
+            if isinstance(cond_value, list):
+                if actual_value in cond_value:
+                    num_conditions_satisfied += 1
+            elif actual_value == cond_value:
+                num_conditions_satisfied += 1
+        if num_conditions_checked > 0 and num_conditions_satisfied == num_conditions_checked:
+            conditions_met = True
+        return conditions_met
+
     def visit_call(self, node):
         """
         This method is called by Pylint whenever it finds a function call
@@ -112,10 +137,8 @@ class RandomStateChecker(BaseChecker):
         # It returns a generator, so with next() we get the first one (usually the best and only one).
         inferred_callable = next(inferred_nodes)
 
-
         # Get the class name from the inferred callable
         class_name = inferred_callable.name
-        
         # Check if the class is one of the target classes we care about
         if class_name in TARGETS_RANDOMNESS:
             arg_map = TARGETS_RANDOMNESS[class_name]
@@ -124,27 +147,13 @@ class RandomStateChecker(BaseChecker):
                 return
             if arg_map["type"] == "function" and not isinstance(inferred_callable, astroid.FunctionDef):
                 return
-            
             expected_seed_param = arg_map["seed_param"]
             expected_conditions = arg_map.get("conditions", {})
 
             conditions_met = True
             # Check if all the conditions are met
             if expected_conditions:
-                conditions_met = False
-                num_conditions_checked = 0
-                num_conditions_satisfied = 0
-                for cond_key, cond_value in expected_conditions.items():
-                    num_conditions_checked +=1
-                    actual_value = self._get_keyword_value(node.keywords, cond_key)
-                    if isinstance(cond_value, list): 
-                        if actual_value in cond_value:
-                            num_conditions_satisfied +=1
-                    elif actual_value == cond_value:
-                        num_conditions_satisfied +=1
-                
-                if num_conditions_checked > 0 and num_conditions_satisfied == num_conditions_checked:
-                    conditions_met = True
+                conditions_met = self._compare_conditions(node, expected_conditions)
 
             # If the conditions are met, check if the random state parameter is present
             if conditions_met:
@@ -155,11 +164,7 @@ class RandomStateChecker(BaseChecker):
                             seed_param_found = True
                             break
                 if not seed_param_found:
-                    self.add_message(
-                        "missing-random-state",
-                        node=node,
-                        args=(class_name, expected_seed_param),
-                    )
+                    self._send_message(node, class_name, expected_seed_param)
 
 
 def register(linter):

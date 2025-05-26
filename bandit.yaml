@@ -1,0 +1,18 @@
+exclude_dirs: [
+  ".venv",
+  "build",
+  "dist",
+  "notebooks",
+  "data",
+  "models",
+  "reports",
+  "references",
+  "docs",
+  "examples",
+  "scripts",
+  ".git"
+]
+
+skips: [
+  "B403", "B301" # Skipping pickle warnings, cause we need to use pickle for model serialization.
+]
