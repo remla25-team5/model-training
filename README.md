@@ -1,3 +1,6 @@
+![test coverage](https://img.shields.io/badge/test%20coverage-0%25-green.svg)
+![pylint score](https://img.shields.io/badge/pylint%20score-8.35-green.svg)
+
 # Model-training: Restaurant Sentiment Model Training
 
 This repository contains the ML pipeline for training the restaurant sentiment analysis model.
