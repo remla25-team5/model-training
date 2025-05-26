@@ -5,6 +5,7 @@ from model_training.modeling.train import create_pipeline_and_train, gaussiannb_
 
 # Test  ML infrastructure Infra 2: Model specification code is unit tested
 
+
 def test_create_pipeline_and_train_basic():
     """Test the basic functionality of the create_pipeline_and_train function."""
     np.random.seed(42)
@@ -15,6 +16,7 @@ def test_create_pipeline_and_train_basic():
     score, estimator = create_pipeline_and_train(X, y, classifier, param_grid, cv_folds=2)
     assert 0.0 <= score <= 1.0
     check_is_fitted(estimator)
+
 
 def test_gaussiannb_classify_basic():
     """Test the basic functionality of the gaussiannb_classify function."""
