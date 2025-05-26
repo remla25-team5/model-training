@@ -15,6 +15,11 @@ from loguru import logger
 
 
 def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds):
+    """
+    Creates a pipeline and performs GridSearchCV to find the best model.
+
+    Returns the best score and the best estimator found.
+    """
     pipeline = Pipeline([('classifier', classifier)])
 
     cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
@@ -46,7 +51,12 @@ def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds):
     return best_score, best_estimator
 
 
-def GaussianNB_Classify(data, labels, cv_folds):
+def gaussiannb_classify(data, labels, cv_folds):
+    """
+    Trains a Gaussian Naive Bayes classifier using the specified parameter grid.
+
+    Returns the best score and the best trained GaussianNB model.
+    """
     classifier = GaussianNB()
     param_grid = {
         'classifier__var_smoothing': [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
@@ -69,20 +79,23 @@ def main(
     model_out_path: Path = Path(__file__).parent.parent.parent / "models/c2_Classifier_Sentiment_Model.joblib",
     metrics_path: Path = Path(__file__).parent.parent.parent / "metrics.json",
 ):
+    """
+    Loads training data, trains a GaussianNB model, and saves the model and metrics.
+    """
     logger.info("Loading data and labels...")
-    with open(data_path, "rb") as f:
+    with open(data_path, "rb", encoding="utf-8") as f:
         data = pickle.load(f)
-    with open(labels_path, "rb") as f:
+    with open(labels_path, "rb", encoding="utf-8") as f:
         labels = pickle.load(f)
 
     logger.info("Starting training with GaussianNB...")
-    best_score, best_estimator = GaussianNB_Classify(data, labels, cv_folds=5)
+    best_score, best_estimator = gaussiannb_classify(data, labels, cv_folds=5)
 
     model_out_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(best_estimator, model_out_path)
     logger.success(f"Saved trained model to {model_out_path}")
 
-    with open(metrics_path, "w") as f:
+    with open(metrics_path, "w", encoding="utf-8") as f:
         f.write(f'{{"accuracy": {best_score:.4f}}}')
     logger.success(f"Saved metrics to {metrics_path}")
 

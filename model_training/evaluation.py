@@ -1,7 +1,7 @@
 from pathlib import Path
 import pickle
-import joblib
 import json
+import joblib
 
 from loguru import logger
 import typer
@@ -52,7 +52,7 @@ def main(
     logger.info(classification_report(y_test, y_pred))
 
     logger.info(f"Saving metrics to {metrics_output_path}")
-    with open(metrics_output_path, "w") as f:
+    with open(metrics_output_path, "w", encoding="utf-8") as f:
         json.dump({
             "accuracy": accuracy,
             "confusion_matrix": conf_matrix,

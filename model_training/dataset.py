@@ -1,6 +1,5 @@
 from pathlib import Path
-import urllib.request
-
+import requests
 from loguru import logger
 from tqdm import tqdm
 import typer
@@ -32,7 +31,10 @@ def main(
 
         try:
             logger.info(f"Downloading {filename}...")
-            urllib.request.urlretrieve(url, dest_path)
+            reponse = requests.get(url, stream=True, timeout=30)
+            with open(dest_path, "wb") as f:
+                for chunk in reponse.iter_content(chunk_size=8192):
+                    f.write(chunk)
             logger.success(f"Saved to {dest_path}")
         except Exception as e:
             logger.error(f"Failed to download {filename}: {e}")

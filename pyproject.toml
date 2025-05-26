@@ -17,7 +17,6 @@ classifiers = [
 ]
 dependencies = [
     "black",
-    "flake8",
     "isort",
     "loguru",
     "mkdocs",
@@ -31,9 +30,11 @@ dependencies = [
     "joblib",
     "scikit-learn",
     "lib-ml @ https://github.com/remla25-team5/lib-ml/releases/download/0.0.1/lib_ml-0.0.1-py3-none-any.whl",
+    "pylint>=3.3.7",
+    "flake8>=7.2.0",
+    "requests>=2.32.3",
     "dvc",
     "dvc[gdrive]",
-    "pylint>=3.3.7",
     "pytest-cov>=6.1.1",
     "bandit>=1.8.3",
 ]

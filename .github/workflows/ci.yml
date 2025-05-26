@@ -28,11 +28,39 @@ jobs:
           echo "pylint_score=$PYLINT_SCORE" >> $GITHUB_ENV
       - name: Lint with flake8
         run: |
-          uv run flake8 $(git ls-files '*.py') --count --select=E9,F63,F7,F82 --show-source --statistics
-          uv run flake8 $(git ls-files '*.py') --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          FLAKE8_OUTPUT_FILE="flake8_output.txt"
+          uv run flake8 --config=.flake8 --format='%(row)d:%(col)d: %(code)s %(text)s' > "$FLAKE8_OUTPUT_FILE" || true
+          FLAKE8_ISSUES=$(wc -l < "$FLAKE8_OUTPUT_FILE" | xargs)
+          echo "Flake8 found $FLAKE8_ISSUES issue(s)."
+
+          if [[ "$FLAKE8_ISSUES" -eq 0 ]];          then FLAKE8_COLOR="brightgreen";
+          elif [[ "$FLAKE8_ISSUES" -lt 10 ]];       then FLAKE8_COLOR="yellowgreen";
+          elif [[ "$FLAKE8_ISSUES" -lt 50 ]];       then FLAKE8_COLOR="orange";
+          else                                            FLAKE8_COLOR="red";
+          fi
+
+          echo "flake8_issues=$FLAKE8_ISSUES" >> $GITHUB_ENV
+          echo "flake8_color=$FLAKE8_COLOR"   >> $GITHUB_ENV
+          echo "Flake8 found $FLAKE8_ISSUES issue(s)."
+        continue-on-error: true
       - name: Run Bandit
-        run: uv run bandit -r $(git ls-files '*.py')
-        continue-on-error: true #
+        run: |
+          BANDIT_OUTPUT="bandit_output.json"
+          uv run bandit -c bandit.yaml -r $(git ls-files '*.py') \
+                        -f json -o "$BANDIT_OUTPUT" || true
+
+          BANDIT_ISSUES=$(jq '.results | length' "$BANDIT_OUTPUT")
+
+          if   [[ "$BANDIT_ISSUES" -eq 0 ]];  then BANDIT_COLOR="brightgreen"
+          elif [[ "$BANDIT_ISSUES" -lt 5 ]];  then BANDIT_COLOR="yellowgreen"
+          elif [[ "$BANDIT_ISSUES" -lt 20 ]]; then BANDIT_COLOR="orange"
+          else                                      BANDIT_COLOR="red"
+          fi
+
+          echo "bandit_issues=$BANDIT_ISSUES" >> "$GITHUB_ENV"
+          echo "bandit_color=$BANDIT_COLOR"   >> "$GITHUB_ENV"
+          echo "Bandit found $BANDIT_ISSUES issue(s)."
+        continue-on-error: true
       - name: Test with pytest
         run: |
           uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json
@@ -40,10 +68,12 @@ jobs:
           echo "coverage=$COVERAGE" >> $GITHUB_ENV
       - name: Commit report
         run: |
+          sed -E -i 's/!\[bandit issues count\]\(https:\/\/img\.shields\.io\/badge\/bandit-[0-9]+%20issues-[a-z]+\.svg\)/![bandit](https:\/\/img.shields.io\/badge\/bandit-${{ env.bandit_issues }}%20issues-${{ env.bandit_color }}.svg)/' README.md
+          sed -E -i 's/!\[flake8 issues count\]\(https:\/\/img\.shields\.io\/badge\/flake8-[0-9]+%20issues-[a-z]+\.svg\)/![flake8](https:\/\/img.shields.io\/badge\/flake8-${{ env.flake8_issues }}%20issues-${{ env.flake8_color }}.svg)/' README.md
           sed -E -i 's/.*!\[pylint score\]\(https:\/\/img\.shields\.io\/badge\/pylint%20score-[0-9.]+-green\.svg\)$/![pylint score](https:\/\/img.shields.io\/badge\/pylint%20score-${{ env.pylint_score }}-green.svg)/' README.md
           sed -E -i 's/.*!\[test coverage\]\(https:\/\/img\.shields\.io\/badge\/test%20coverage-[0-9]+%25-green\.svg\)$/![test coverage](https:\/\/img.shields.io\/badge\/test%20coverage-${{ env.coverage }}%25-green.svg)/' README.md
           git config --global user.name 'remla25-team5'
           git config --global user.email 'remla25-team5@users.noreply.github.com'
           git add README.md
-          git commit -m "README"
+          git commit -m "README" || echo "Nothing to commit"
           git push
