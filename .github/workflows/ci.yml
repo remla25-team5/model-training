@@ -61,7 +61,6 @@ jobs:
           echo "bandit_color=$BANDIT_COLOR"   >> "$GITHUB_ENV"
           echo "Bandit found $BANDIT_ISSUES issue(s)."
         continue-on-error: true
-        continue-on-error: true #
       - name: Test with pytest
         run: |
           uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json
