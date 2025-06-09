@@ -1,11 +1,14 @@
+import json
+import os
 from pathlib import Path
 import pickle
-import json
-import joblib
+import time
 
+import joblib
 from loguru import logger
+import psutil
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import typer
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 app = typer.Typer()
 
@@ -17,7 +20,7 @@ DEFAULT_METRICS_OUTPUT_PATH = Path(__file__).parent.parent / "metrics_eval.json"
 
 
 @app.command()
-def main(
+def run_evaluation(
     test_data_path: Path = DEFAULT_TEST_DATA_PATH,
     test_labels_path: Path = DEFAULT_TEST_LABELS_PATH,
     model_path: Path = DEFAULT_MODEL_PATH,
@@ -53,13 +56,38 @@ def main(
 
     logger.info(f"Saving metrics to {metrics_output_path}")
     with open(metrics_output_path, "w", encoding="utf-8") as f:
-        json.dump({
-            "accuracy": accuracy,
-            "confusion_matrix": conf_matrix,
-            "classification_report": class_report,
-        }, f, indent=4)
+        json.dump(
+            {
+                "accuracy": accuracy,
+                "confusion_matrix": conf_matrix,
+                "classification_report": class_report,
+            },
+            f,
+            indent=4,
+        )
 
     logger.success("Evaluation completed and metrics saved.")
+
+
+def test_evaluation_memory_usage(dummy_data):
+    process = psutil.Process(os.getpid())
+    mem_before = process.memory_info().rss
+
+    run_evaluation()
+
+    mem_after = process.memory_info().rss
+    # Allow up to 100MB increase
+    assert mem_after - mem_before < 100 * 1024 * 1024, f"Memory usage increased too much: {mem_after - mem_before} bytes"
+
+
+def test_evaluation_performance(dummy_data):
+    start = time.time()
+
+    run_evaluation()
+
+    elapsed = time.time() - start
+    # Should finish in under 10 seconds
+    assert elapsed < 10, f"Evaluation took too long: {elapsed:.2f} seconds"
 
 
 if __name__ == "__main__":
