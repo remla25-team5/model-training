@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 # Test Features and Data: 
 # 1. Test that the distributions of each feature match our expectations.
-# 2. Test the cost of each feature.
+# Data 3: No feature’s cost is too much
 
 @pytest.fixture
 def raw_dataset():
