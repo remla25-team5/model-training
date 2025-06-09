@@ -14,7 +14,7 @@ from sklearn.naive_bayes import GaussianNB
 from loguru import logger
 
 
-def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds):
+def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds, random_state=42):
     """
     Creates a pipeline and performs GridSearchCV to find the best model.
 
@@ -22,7 +22,7 @@ def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds):
     """
     pipeline = Pipeline([('classifier', classifier)])
 
-    cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
+    cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=random_state)
     scoring = 'accuracy'
 
     grid_search = GridSearchCV(
@@ -51,7 +51,7 @@ def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds):
     return best_score, best_estimator
 
 
-def gaussiannb_classify(data, labels, cv_folds):
+def gaussiannb_classify(data, labels, cv_folds, random_state=42):
     """
     Trains a Gaussian Naive Bayes classifier using the specified parameter grid.
 
@@ -67,7 +67,8 @@ def gaussiannb_classify(data, labels, cv_folds):
         labels,
         classifier,
         param_grid,
-        cv_folds
+        cv_folds,
+        random_state=random_state
     )
 
     return best_score, best_estimator
@@ -83,9 +84,9 @@ def main(
     Loads training data, trains a GaussianNB model, and saves the model and metrics.
     """
     logger.info("Loading data and labels...")
-    with open(data_path, "rb", encoding="utf-8") as f:
+    with open(data_path, "rb") as f:
         data = pickle.load(f)
-    with open(labels_path, "rb", encoding="utf-8") as f:
+    with open(labels_path, "rb") as f:
         labels = pickle.load(f)
 
     logger.info("Starting training with GaussianNB...")
