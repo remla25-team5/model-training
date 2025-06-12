@@ -93,7 +93,7 @@ def test_serving_latency_performance(raw_dataset, performance_baseline):
     Measures prediction time for individual samples.
     """
     corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=100)
+    cv = CountVectorizer(max_features=1420)
     features = cv.fit_transform(corpus).toarray()
     
     # Train a simple model
@@ -132,19 +132,36 @@ def test_throughput_performance(raw_dataset, performance_baseline):
     Measures how many samples can be processed per second.
     """
     corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=100)
+    cv = CountVectorizer(max_features=1420)
     features = cv.fit_transform(corpus).toarray()
     
     # Train model
     _, model = gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
-    
-    # Measure batch throughput
+      # Measure batch throughput
     batch_size = 100
     test_features = features[:batch_size]
+
+    assert len(test_features) == batch_size, "Test features size does not match batch size"
     
-    start_time = time.time()
+    # Run multiple predictions to get a more reliable timing
+    num_runs = 5
+    total_time = 0
+    
+    # Warm up the model first
     model.predict(test_features)
-    batch_time = time.time() - start_time
+    
+    for _ in range(num_runs):
+        start_time = time.time()
+        model.predict(test_features)
+        total_time += time.time() - start_time
+    
+    # Use average time to calculate throughput, with a safety check
+    batch_time = total_time / num_runs
+    
+    # Ensure batch_time is not zero to prevent division by zero
+    if batch_time == 0:
+        print("Warning: Batch time is zero, setting to a small value to avoid division by zero.")
+        batch_time = 1e-6
     
     throughput = batch_size / batch_time
     
@@ -169,7 +186,7 @@ def test_memory_usage_performance(raw_dataset, performance_baseline):
     
     # Prepare data
     corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=100)
+    cv = CountVectorizer(max_features=1420)
     features = cv.fit_transform(corpus).toarray()
     
     # Measure memory during training
