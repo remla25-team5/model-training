@@ -27,15 +27,25 @@ def raw_dataset():
     file_path = data_dir / filename
     
     if not file_path.exists():
-        # Download the dataset
         data_dir.mkdir(parents=True, exist_ok=True)
         url = f"{base_url}/{filename}"
         
-        response = requests.get(url, timeout=30)
-        response.raise_for_status()
-        
-        with open(file_path, "wb") as f:
-            f.write(response.content)
+        # Retry logic
+        max_retries = 3
+        delay = 5
+
+        for attempt in range(max_retries):
+            try:
+                response = requests.get(url, timeout=30)
+                response.raise_for_status()
+                with open(file_path, "wb") as f:
+                    f.write(response.content)
+                break
+            except requests.exceptions.RequestException as e:
+                if attempt < max_retries - 1:
+                    time.sleep(delay * (2 ** attempt))
+                else:
+                    raise
     
     # Load and return the dataset
     dataset = pd.read_csv(file_path, delimiter='\t', quoting=3)
