@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 
+
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """
     Test the calculation of the ML score based on the test files per section.
@@ -15,8 +16,9 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     }
 
     results = defaultdict(lambda: {"total": 0, "passed": 0})
-    
-    for report in terminalreporter.getreports("passed") + terminalreporter.getreports("failed") + terminalreporter.getreports("skipped"):
+
+    for report in terminalreporter.getreports("passed") + terminalreporter.getreports("failed") \
+            + terminalreporter.getreports("skipped"):
         path = report.nodeid.split("::")[0]
         filename = os.path.basename(path)
         prefix = filename.replace("test_", "").split(".")[0]

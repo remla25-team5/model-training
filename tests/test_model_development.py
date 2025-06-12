@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 from pathlib import Path
 import requests
+import time
 from sklearn.naive_bayes import GaussianNB
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import accuracy_score
@@ -12,6 +13,7 @@ from lib_ml.preprocessing import preprocess_dataset
 # Test Model Development:
 # Model 6: Model quality is sufficient on all important data slices.
 
+
 @pytest.fixture
 def raw_dataset():
     """
@@ -19,15 +21,15 @@ def raw_dataset():
     """
     base_url = "https://storage.googleapis.com/remla-group-5-unique-bucket"
     filename = "a1_RestaurantReviews_HistoricDump.tsv"
-    
+
     # Check if data already exists locally
     data_dir = Path(__file__).parent.parent / "data" / "raw"
     file_path = data_dir / filename
-    
+
     if not file_path.exists():
         data_dir.mkdir(parents=True, exist_ok=True)
         url = f"{base_url}/{filename}"
-        
+
         # Retry logic
         max_retries = 3
         delay = 5
@@ -39,12 +41,12 @@ def raw_dataset():
                 with open(file_path, "wb") as f:
                     f.write(response.content)
                 break
-            except requests.exceptions.RequestException as e:
+            except requests.exceptions.RequestException:
                 if attempt < max_retries - 1:
                     time.sleep(delay * (2 ** attempt))
                 else:
                     raise
-    
+
     # Load and return the dataset
     dataset = pd.read_csv(file_path, delimiter='\t', quoting=3)
     return dataset
@@ -65,7 +67,7 @@ def test_model_performance_on_slices(raw_dataset):
     # Fit CountVectorizer on training texts
     cv = CountVectorizer(max_features=1420)
     X_train = cv.fit_transform(X_train_texts).toarray()
-    X_test = cv.transform(X_test_texts).toarray()
+    cv.transform(X_test_texts).toarray()
 
     # Train classifier
     classifier = GaussianNB()
