@@ -95,6 +95,64 @@ If you want to push any changes to the remote storage, you can run:
 dvc push
 ```
 
+### Running the tests
+
+This project uses pytest for testing, and integrates several code quality tools including `pylint`, `flake8`, and `bandit`. Code coverage is tracked using `pytest-cov`.
+
+#### Running Unit Tests with pytest
+
+To run all tests in the tests folder:
+
+```bash
+pytest tests/
+```
+
+To run a specific test file:
+
+```bash
+pytest tests/test_features_data.py
+```
+
+#### Checking Code Coverage
+
+You can run tests with coverage reporting:
+
+```bash
+pytest --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json --cov-report=term
+```
+
+This generates:
+- A terminal coverage report
+- A JSON coverage report in `coverage.json`
+- JUnit test results in `junit/test-results.xml`
+
+For a more detailed HTML coverage report:
+
+```bash
+pytest --doctest-modules --cov=model_training --cov-report=html
+```
+
+This creates an HTML report in the `htmlcov` folder, which you can open in a browser to view detailed coverage information.
+
+#### Code Quality Tools
+
+**Flake8**: Check for PEP8 compliance and other issues:
+
+```bash
+flake8 --config=.flake8
+```
+
+#### ML Test Score
+
+The testing framework also calculates an ML Test Score based on test results across different categories:
+- Features
+- Monitoring
+- ML Infrastructure
+- Model Development
+
+These scores are displayed in the test output and contribute to the ML Score badge in this README.
+
+
 # model-training
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
