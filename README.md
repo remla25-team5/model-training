@@ -2,6 +2,7 @@
 ![pylint score](https://img.shields.io/badge/pylint%20score-8.23-green.svg)
 ![flake8](https://img.shields.io/badge/flake8-0%20issues-brightgreen.svg)
 ![bandit](https://img.shields.io/badge/bandit-0%20issues-brightgreen.svg)
+![ml score](https://img.shields.io/badge/ml%20score-1-blue.svg)
 
 # Model-training: Restaurant Sentiment Model Training
 
