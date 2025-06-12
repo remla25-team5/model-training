@@ -37,6 +37,7 @@ dependencies = [
     "dvc[gdrive]",
     "pytest-cov>=6.1.1",
     "bandit>=1.8.3",
+    "pytest-json-report>=1.5.0"
 ]
 requires-python = "~=3.10.0"
 
