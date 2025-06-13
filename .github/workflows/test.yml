@@ -30,6 +30,10 @@
         - name: Transform Data
           run: |
             uv run python model_training/transform.py
+
+        - name: Train Model
+          run: |
+            uv run python model_training/modeling/train.py
             
         - name: Run Evaluation
           run: |
