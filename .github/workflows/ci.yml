@@ -63,15 +63,15 @@ jobs:
         continue-on-error: true
       - name: Generate Dataset
         run: |
-          uv run python dataset.py
+          uv run python model_training/dataset.py
       
       - name: Transform Data
         run: |
-          uv run python transform.py
+          uv run python model_training/transform.py
           
       - name: Run Evaluation
         run: |
-          uv run python evaluation.py
+          uv run python model_training/evaluation.py
       - name: Test with pytest
         run: |
           uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json > pytest_output.txt

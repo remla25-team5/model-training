@@ -25,15 +25,15 @@
             uv sync
         - name: Generate Dataset
           run: |
-            uv run python dataset.py
+            uv run python model_training/dataset.py
         
         - name: Transform Data
           run: |
-            uv run python transform.py
+            uv run python model_training/transform.py
             
         - name: Run Evaluation
           run: |
-            uv run python evaluation.py
+            uv run python model_training/evaluation.py
         - name: Run tests
           run: |
             uv run pytest
