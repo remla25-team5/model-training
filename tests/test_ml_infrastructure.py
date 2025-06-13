@@ -1,18 +1,16 @@
 import json
 import numpy as np
 import pandas as pd
+import pickle
 import pytest
 import requests
+import subprocess
+import sys
 import time
 
 from lib_ml.preprocessing import preprocess_dataset
-from pathlib import Path
-from sklearn.feature_extraction.text import CountVectorizer
-import pickle
-import subprocess
-import sys
 from model_training.modeling.train import gaussiannb_classify
-
+from pathlib import Path
 # bandit: disable=B101  (asserts are fine in this test)
 
 # Test ML Infrastructure:
@@ -58,15 +56,28 @@ def raw_dataset():
     return dataset
 
 
+@pytest.fixture
+def load_vectorizer():
+    """
+    Fixture that loads the pre-trained CountVectorizer for testing.
+    """
+    vectorizer_path = Path(__file__).parent.parent / "models" / "c1_BoW_Sentiment_Model.pkl"
+    if not vectorizer_path.exists():
+        raise FileNotFoundError(f"Vectorizer file not found: {vectorizer_path}")
+
+    with open(vectorizer_path, 'rb') as f:
+        vectorizer = pickle.load(f)
+    return vectorizer
+
+
 # Infra 1: Training is reproducible
-def test_training_reproducibility_same_seed(raw_dataset):
+def test_training_reproducibility_same_seed(raw_dataset, load_vectorizer):
     """
     Test that training with the same random seed produces identical results.
     """
 
     corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=1420)
-    features = cv.fit_transform(corpus).toarray()
+    features = load_vectorizer.fit_transform(corpus).toarray()
 
     # Train model1
     best_score1, best_estimator1 = gaussiannb_classify(features, labels, cv_folds=5, random_state=42)

@@ -1,12 +1,11 @@
 import numpy as np
 import pandas as pd
+import pickle
 import pytest
 import requests
 import time
 
-from lib_ml.preprocessing import preprocess_dataset
 from pathlib import Path
-from sklearn.feature_extraction.text import CountVectorizer
 
 # bandit: disable=B101  (asserts are fine in this test)
 
@@ -53,6 +52,20 @@ def raw_dataset():
     return dataset
 
 
+@pytest.fixture
+def load_vectorizer():
+    """
+    Fixture that loads the pre-trained CountVectorizer for testing.
+    """
+    vectorizer_path = Path(__file__).parent.parent / "models" / "c1_BoW_Sentiment_Model.pkl"
+    if not vectorizer_path.exists():
+        raise FileNotFoundError(f"Vectorizer file not found: {vectorizer_path}")
+
+    with open(vectorizer_path, 'rb') as f:
+        vectorizer = pickle.load(f)
+    return vectorizer
+
+
 def test_raw_dataset_distribution(raw_dataset):
     """
     Test the distribution characteristics of the raw dataset.
@@ -84,21 +97,15 @@ def test_raw_dataset_distribution(raw_dataset):
     assert 0.4 < positive_ratio < 0.6, f"Label distribution seems imbalanced: {positive_ratio:.2%} positive"
 
 
-def test_feature_cost_analysis(raw_dataset):
+def test_feature_cost_analysis(load_vectorizer):
     """
     Data 3: Test that no feature's cost is too high.
     Measures extraction time cost and cost of memory usage of features.
     """
-
-    # Preprocess the dataset
-    corpus, _ = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=1420)
-    features = cv.fit_transform(corpus).toarray()
-
     # Measure feature extraction time cost
     start_time = time.time()
     test_corpus = ["This is a good restaurant."]
-    cv.transform(test_corpus).toarray()
+    features = load_vectorizer.transform(test_corpus).toarray()
     feature_extraction_time = time.time() - start_time
 
     # Feature extraction should be fast (< 1 second for single review)

@@ -1,64 +1,41 @@
-import pandas as pd
+import joblib
+import pickle
 import pytest
-import requests
-import time
-from lib_ml.preprocessing import preprocess_dataset
-from model_training.modeling.train import gaussiannb_classify
 from pathlib import Path
-from sklearn.feature_extraction.text import CountVectorizer
 # bandit: disable=B101  (asserts are fine in this test)
 
 
 @pytest.fixture
-def raw_dataset():
+def load_model():
     """
-    Fixture that provides the raw restaurant reviews dataset from the URL.
+    Fixture that loads the pre-trained model for testing.
     """
-    base_url = "https://storage.googleapis.com/remla-group-5-unique-bucket"
-    filename = "a1_RestaurantReviews_HistoricDump.tsv"
-
-    # Check if data already exists locally
-    data_dir = Path(__file__).parent.parent / "data" / "raw"
-    file_path = data_dir / filename
-
-    if not file_path.exists():
-        data_dir.mkdir(parents=True, exist_ok=True)
-        url = f"{base_url}/{filename}"
-
-        # Retry logic
-        max_retries = 3
-        delay = 5
-
-        for attempt in range(max_retries):
-            try:
-                response = requests.get(url, timeout=30)
-                response.raise_for_status()
-                with open(file_path, "wb") as f:
-                    f.write(response.content)
-                break
-            except requests.exceptions.RequestException:
-                if attempt < max_retries - 1:
-                    time.sleep(delay * (2 ** attempt))
-                else:
-                    raise
-
-    # Load and return the dataset
-    dataset = pd.read_csv(file_path, delimiter='\t', quoting=3)
-    return dataset
+    model_path = Path(__file__).parent.parent / "models" / "c2_Classifier_Sentiment_Model.joblib"
+    if not model_path.exists():
+        raise FileNotFoundError(f"Model file not found: {model_path}")
+    with open(model_path, 'rb') as f:
+        model = joblib.load(f)
+    return model
 
 
-def test_mutamorphic_with_synonym_replacement(raw_dataset):
+@pytest.fixture
+def load_vectorizer():
+    """
+    Fixture that loads the pre-trained CountVectorizer for testing.
+    """
+    vectorizer_path = Path(__file__).parent.parent / "models" / "c1_BoW_Sentiment_Model.pkl"
+    if not vectorizer_path.exists():
+        raise FileNotFoundError(f"Vectorizer file not found: {vectorizer_path}")
+
+    with open(vectorizer_path, 'rb') as f:
+        vectorizer = pickle.load(f)
+    return vectorizer
+
+
+def test_mutamorphic_with_synonym_replacement(load_vectorizer, load_model):
     """
     Mutamorphic test with synonym replacement to check model consistency.
     """
-    # Preprocess the dataset
-    corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=1420)
-    features = cv.fit_transform(corpus).toarray()
-
-    # Train the model
-    _, model = gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
-
     # STAGE 1: Automatic test input generation
     # Define test sentences
     test_sentences = [
@@ -94,13 +71,13 @@ def test_mutamorphic_with_synonym_replacement(raw_dataset):
         mutated_sentences.append(mutated_sentence)
         print(f"Original: {sentence} -> Mutated: {mutated_sentence}")
 
-        original_feature = cv.transform([sentence]).toarray()
-        mutated_feature = cv.transform([mutated_sentence]).toarray()
+        original_feature = load_vectorizer.transform([sentence]).toarray()
+        mutated_feature = load_vectorizer.transform([mutated_sentence]).toarray()
 
         # STAGE 2: Automatic test oracle generation
         # Make predictions on both original and mutated features
-        original_preds = model.predict(original_feature)[0]
-        mutated_preds = model.predict(mutated_feature)[0]
+        original_preds = load_model.predict(original_feature)[0]
+        mutated_preds = load_model.predict(mutated_feature)[0]
         print(f"Original Predictions: {original_preds}")
         print(f"Mutated Predictions: {mutated_preds}")
 
@@ -114,8 +91,8 @@ def test_mutamorphic_with_synonym_replacement(raw_dataset):
                     for mutant in mutant_map[word]:
                         words[j] = mutant
                         repaired_sentence = ' '.join(words)
-                        repaired_feature = cv.transform([repaired_sentence]).toarray()
-                        repaired_preds = model.predict(repaired_feature)[0]
+                        repaired_feature = load_vectorizer.transform([repaired_sentence]).toarray()
+                        repaired_preds = load_model.predict(repaired_feature)[0]
                         print(f"Repaired Sentence: {repaired_sentence} -> Prediction: {repaired_preds}")
 
                         if repaired_preds == original_preds:

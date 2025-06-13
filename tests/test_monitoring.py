@@ -1,5 +1,7 @@
+import joblib
 import numpy as np
 import pandas as pd
+import pickle
 import psutil
 import pytest
 import requests
@@ -8,8 +10,6 @@ import time
 from lib_ml.preprocessing import preprocess_dataset
 from model_training.modeling.train import gaussiannb_classify
 from pathlib import Path
-from sklearn.feature_extraction.text import CountVectorizer
-
 # bandit: disable=B101  (asserts are fine in this test)
 
 # Test Monitoring:
@@ -56,6 +56,33 @@ def raw_dataset():
 
 
 @pytest.fixture
+def load_model():
+    """
+    Fixture that loads the pre-trained model for testing.
+    """
+    model_path = Path(__file__).parent.parent / "models" / "c2_Classifier_Sentiment_Model.joblib"
+    if not model_path.exists():
+        raise FileNotFoundError(f"Model file not found: {model_path}")
+    with open(model_path, 'rb') as f:
+        model = joblib.load(f)
+    return model
+
+
+@pytest.fixture
+def load_vectorizer():
+    """
+    Fixture that loads the pre-trained CountVectorizer for testing.
+    """
+    vectorizer_path = Path(__file__).parent.parent / "models" / "c1_BoW_Sentiment_Model.pkl"
+    if not vectorizer_path.exists():
+        raise FileNotFoundError(f"Vectorizer file not found: {vectorizer_path}")
+
+    with open(vectorizer_path, 'rb') as f:
+        vectorizer = pickle.load(f)
+    return vectorizer
+
+
+@pytest.fixture
 def performance_baseline():
     """Fixture providing performance baselines for comparison."""
     return {
@@ -68,13 +95,12 @@ def performance_baseline():
 
 
 # Monitor 6: Model computational performance monitoring
-def test_training_speed_performance(raw_dataset, performance_baseline):
+def test_training_speed_performance(raw_dataset, performance_baseline, load_vectorizer):
     """
     Measures training time and ensures it hasn't regressed significantly.
     """
     corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=1420)
-    features = cv.fit_transform(corpus).toarray()
+    features = load_vectorizer.fit_transform(corpus).toarray()
 
     # Measure training time
     start_time = time.time()
@@ -102,28 +128,22 @@ def test_training_speed_performance(raw_dataset, performance_baseline):
           (baseline: {performance_baseline['training_time_per_sample']:.4f}s)")
 
 
-def test_serving_latency_performance(raw_dataset, performance_baseline):
+def test_serving_latency_performance(performance_baseline, load_vectorizer, load_model):
     """
     Measures prediction time for individual samples.
     """
-    corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=1420)
-    features = cv.fit_transform(corpus).toarray()
-
-    # Train a simple model
-    _, model = gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
-
     # Measure single-sample inference latency
-    single_sample = features[:1]
+    single_sample_text = ["This restaurant is great!"]
+    single_sample = load_vectorizer.transform(single_sample_text).toarray()
 
     # Warm up the model (first prediction is often slower)
-    model.predict(single_sample)
+    load_model.predict(single_sample)
 
     # Measure actual latency
     latency_times = []
     for _ in range(100):
         start_time = time.time()
-        model.predict(single_sample)
+        load_model.predict(single_sample)
         latency_times.append(time.time() - start_time)
 
     avg_latency = np.mean(latency_times)
@@ -144,16 +164,12 @@ def test_serving_latency_performance(raw_dataset, performance_baseline):
            (baseline: {performance_baseline['inference_time_per_sample']:.6f}s)")
 
 
-def test_throughput_performance(raw_dataset, performance_baseline):
+def test_throughput_performance(raw_dataset, performance_baseline, load_vectorizer, load_model):
     """
     Measures how many samples can be processed per second.
     """
-    corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=1420)
-    features = cv.fit_transform(corpus).toarray()
-
-    # Train model
-    _, model = gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
+    corpus, _ = preprocess_dataset(raw_dataset)
+    features = load_vectorizer.fit_transform(corpus).toarray()
 
     # Measure batch throughput
     batch_size = 100
@@ -166,11 +182,11 @@ def test_throughput_performance(raw_dataset, performance_baseline):
     total_time = 0
 
     # Warm up the model first
-    model.predict(test_features)
+    load_model.predict(test_features)
 
     for _ in range(num_runs):
         start_time = time.time()
-        model.predict(test_features)
+        load_model.predict(test_features)
         total_time += time.time() - start_time
 
     # Use average time to calculate throughput, with a safety check
@@ -197,7 +213,7 @@ def test_throughput_performance(raw_dataset, performance_baseline):
           (baseline minimum: {performance_baseline['throughput_min']} samples/s)")
 
 
-def test_memory_usage_performance(raw_dataset, performance_baseline):
+def test_memory_usage_performance(raw_dataset, performance_baseline, load_vectorizer):
     """
     Monitors memory consumption during training and inference.
     """
@@ -205,8 +221,7 @@ def test_memory_usage_performance(raw_dataset, performance_baseline):
 
     # Prepare data
     corpus, labels = preprocess_dataset(raw_dataset)
-    cv = CountVectorizer(max_features=1420)
-    features = cv.fit_transform(corpus).toarray()
+    features = load_vectorizer.fit_transform(corpus).toarray()
 
     # Measure memory during training
     training_stat_memory = process.memory_info().rss / 1024 / 1024
