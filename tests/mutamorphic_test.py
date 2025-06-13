@@ -126,4 +126,5 @@ def test_mutamorphic_with_synonym_replacement(raw_dataset):
 
             if not repaired:
                 print(f"No consistent mutant found for: {mutated_sentences[i]}")
-                assert False, f"Inconsistency found between original and mutated predictions for: {mutated_sentences[i]}"
+                assert False, f"Inconsistency found between original and mutated predictions\
+                      for: {mutated_sentences[i]}"
