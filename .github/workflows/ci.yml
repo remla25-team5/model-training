@@ -69,7 +69,6 @@ jobs:
           echo "coverage=$COVERAGE" >> $GITHUB_ENV
           ML_SCORE=$(grep "Final ML Test Score:" pytest_output.txt | awk -F': ' '{print $2}')
           echo "ml_score=$ML_SCORE" >> $GITHUB_ENV
-        continue-on-error: true
       - name: Commit report
         run: |
           sed -E -i 's/!\[bandit issues count\]\(https:\/\/img\.shields\.io\/badge\/bandit-[0-9]+%20issues-[a-z]+\.svg\)/![bandit](https:\/\/img.shields.io\/badge\/bandit-${{ env.bandit_issues }}%20issues-${{ env.bandit_color }}.svg)/' README.md

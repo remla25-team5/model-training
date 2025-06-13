@@ -113,12 +113,25 @@ To run a specific test file:
 pytest tests/test_features_data.py
 ```
 
+#### Mutamorphic Testing with Automatic Repair
+
+The project includes mutamorphic tests that automatically detect and repair inconsistencies in model behavior. These tests check if model predictions remain consistent across different mutations of the same test input data, such as replacing words with synonyms.
+
+```bash
+pytest tests/mutamorphic_test.py -v
+```
+
+Mutamorphic testing works by:
+1. Generating the test input data.
+2. Testing if replacing words with synonyms leads to the same model predictions.
+3. If predictions differ, the test fails and the code attempts to repair the issue by trying other synonyms to automatically repair consistencies.
+
 #### Checking Code Coverage
 
 You can run tests with coverage reporting:
 
 ```bash
-pytest --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json --cov-report=term
+uv run pytest --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json --cov-report=term
 ```
 
 This generates:
@@ -129,7 +142,7 @@ This generates:
 For a more detailed HTML coverage report:
 
 ```bash
-pytest --doctest-modules --cov=model_training --cov-report=html
+uv run pytest --doctest-modules --cov=model_training --cov-report=html
 ```
 
 This creates an HTML report in the `htmlcov` folder, which you can open in a browser to view detailed coverage information.

@@ -8,11 +8,10 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """
 
     section_prefixes = {
-        'features_data': 'Features',
+        'features_data': 'Features and Data',
         'monitoring': 'Monitoring',
         'ml_infrastructure': 'ML Infrastructure',
         'model_development': 'Model Development',
-        'train': 'Training'
     }
 
     results = defaultdict(lambda: {"total": 0, "passed": 0})
@@ -23,6 +22,8 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         filename = os.path.basename(path)
         prefix = filename.replace("test_", "").split(".")[0]
         section = section_prefixes.get(prefix, "Other")
+        if section == "Other":
+            continue
 
         results[section]["total"] += 1
         if report.passed:
