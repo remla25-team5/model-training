@@ -61,6 +61,17 @@ jobs:
           echo "bandit_color=$BANDIT_COLOR"   >> "$GITHUB_ENV"
           echo "Bandit found $BANDIT_ISSUES issue(s)."
         continue-on-error: true
+      - name: Generate Dataset
+        run: |
+          uv run python dataset.py
+      
+      - name: Transform Data
+        run: |
+          uv run python transform.py
+          
+      - name: Run Evaluation
+        run: |
+          uv run python evaluation.py
       - name: Test with pytest
         run: |
           uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json > pytest_output.txt
