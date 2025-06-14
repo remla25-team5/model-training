@@ -23,6 +23,21 @@
             python -m pip install --upgrade pip
             pip install uv
             uv sync
+        - name: Generate Dataset
+          run: |
+            uv run python model_training/dataset.py
+        
+        - name: Transform Data
+          run: |
+            uv run python model_training/transform.py
+
+        - name: Train Model
+          run: |
+            uv run python model_training/modeling/train.py
+            
+        - name: Run Evaluation
+          run: |
+            uv run python model_training/evaluation.py
         - name: Run tests
           run: |
             uv run pytest

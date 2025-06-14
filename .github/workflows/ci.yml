@@ -61,17 +61,36 @@ jobs:
           echo "bandit_color=$BANDIT_COLOR"   >> "$GITHUB_ENV"
           echo "Bandit found $BANDIT_ISSUES issue(s)."
         continue-on-error: true
+      - name: Generate Dataset
+        run: |
+          uv run python model_training/dataset.py
+      
+      - name: Transform Data
+        run: |
+          uv run python model_training/transform.py
+
+      - name: Train Model
+        run: |
+          uv run python model_training/modeling/train.py
+          
+      - name: Run Evaluation
+        run: |
+          uv run python model_training/evaluation.py
       - name: Test with pytest
         run: |
-          uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json
+          uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json > pytest_output.txt
+          cat pytest_output.txt
           COVERAGE=$(cat coverage.json | jq -r '.totals.percent_covered_display')
           echo "coverage=$COVERAGE" >> $GITHUB_ENV
+          ML_SCORE=$(grep "Final ML Test Score:" pytest_output.txt | awk -F': ' '{print $2}')
+          echo "ml_score=$ML_SCORE" >> $GITHUB_ENV
       - name: Commit report
         run: |
           sed -E -i 's/!\[bandit issues count\]\(https:\/\/img\.shields\.io\/badge\/bandit-[0-9]+%20issues-[a-z]+\.svg\)/![bandit](https:\/\/img.shields.io\/badge\/bandit-${{ env.bandit_issues }}%20issues-${{ env.bandit_color }}.svg)/' README.md
           sed -E -i 's/!\[flake8 issues count\]\(https:\/\/img\.shields\.io\/badge\/flake8-[0-9]+%20issues-[a-z]+\.svg\)/![flake8](https:\/\/img.shields.io\/badge\/flake8-${{ env.flake8_issues }}%20issues-${{ env.flake8_color }}.svg)/' README.md
           sed -E -i 's/.*!\[pylint score\]\(https:\/\/img\.shields\.io\/badge\/pylint%20score-[0-9.]+-green\.svg\)$/![pylint score](https:\/\/img.shields.io\/badge\/pylint%20score-${{ env.pylint_score }}-green.svg)/' README.md
           sed -E -i 's/.*!\[test coverage\]\(https:\/\/img\.shields\.io\/badge\/test%20coverage-[0-9]+%25-green\.svg\)$/![test coverage](https:\/\/img.shields.io\/badge\/test%20coverage-${{ env.coverage }}%25-green.svg)/' README.md
+          sed -E -i 's/.*!\[ml score\]\(https:\/\/img\.shields\.io\/badge\/ml%20score-[0-9]+-blue\.svg\)$/![ml score](https:\/\/img.shields.io\/badge\/ml%20score-${{ env.ml_score }}-blue.svg)/' README.md || echo "Adding ML score badge"
           git config --global user.name 'remla25-team5'
           git config --global user.email 'remla25-team5@users.noreply.github.com'
           git add README.md

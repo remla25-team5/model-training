@@ -1,7 +1,8 @@
 ![test coverage](https://img.shields.io/badge/test%20coverage-98%25-green.svg)
-![pylint score](https://img.shields.io/badge/pylint%20score-8.23-green.svg)
+![pylint score](https://img.shields.io/badge/pylint%20score-9.18-green.svg)
 ![flake8](https://img.shields.io/badge/flake8-0%20issues-brightgreen.svg)
 ![bandit](https://img.shields.io/badge/bandit-0%20issues-brightgreen.svg)
+![ml score](https://img.shields.io/badge/ml%20score-1-blue.svg)
 
 # Model-training: Restaurant Sentiment Model Training
 
@@ -93,6 +94,79 @@ If you want to push any changes to the remote storage, you can run:
 ```bash
 dvc push
 ```
+
+### Running the tests
+
+This project uses `pytest` for testing, and integrates several code quality tools including `pylint`, `flake8`, and `bandit`. Code coverage is tracked using `pytest-cov`.
+
+**Note**: Before running any tests, ensure you have the model and BoW vectorizer files in the `models/` folder. You can download them by running `model_training/dataset.py`, then `model_training/transform.py`, and finally `model_training/modeling/train.py` to train the model and save it in the `models` folder.
+
+#### Running Unit Tests with pytest
+
+To run all tests in the tests folder:
+
+```bash
+pytest tests/
+```
+
+To run a specific test file:
+
+```bash
+pytest tests/test_features_data.py
+```
+
+#### Mutamorphic Testing with Automatic Repair
+
+The project includes mutamorphic tests that automatically detect and repair inconsistencies in model behavior. These tests check if model predictions remain consistent across different mutations of the same test input data, such as replacing words with synonyms.
+
+```bash
+pytest tests/mutamorphic_test.py -v
+```
+
+Mutamorphic testing works by:
+1. Generating the test input data.
+2. Testing if replacing words with synonyms leads to the same model predictions.
+3. If predictions differ, the test fails and the code attempts to repair the issue by trying other synonyms to automatically repair consistencies.
+
+#### Checking Code Coverage
+
+You can run tests with coverage reporting:
+
+```bash
+uv run pytest --doctest-modules --junitxml=junit/test-results.xml --cov=model_training --cov-report=json --cov-report=term
+```
+
+This generates:
+- A terminal coverage report
+- A JSON coverage report in `coverage.json`
+- JUnit test results in `junit/test-results.xml`
+
+For a more detailed HTML coverage report:
+
+```bash
+uv run pytest --doctest-modules --cov=model_training --cov-report=html
+```
+
+This creates an HTML report in the `htmlcov` folder, which you can open in a browser to view detailed coverage information.
+
+#### Code Quality Tools
+
+**Flake8**: Check for PEP8 compliance and other issues:
+
+```bash
+flake8 --config=.flake8
+```
+
+#### ML Test Score
+
+The testing framework also calculates an ML Test Score based on test results across different categories:
+- Features
+- Monitoring
+- ML Infrastructure
+- Model Development
+
+These scores are displayed in the test output and contribute to the ML Score badge in this README.
+
 
 # model-training
 
