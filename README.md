@@ -101,6 +101,8 @@ This project uses pytest for testing, and integrates several code quality tools 
 
 #### Running Unit Tests with pytest
 
+**Note**: Before running the tests, ensure you have the model and BoW vectorizer files in the `models/` folder. You can download them by running `model_training/dataset.py`, then `model_training/transform.py`, and finally `model_training/modeling/train.py` to train the model and save it in the `models` folder.
+
 To run all tests in the tests folder:
 
 ```bash
