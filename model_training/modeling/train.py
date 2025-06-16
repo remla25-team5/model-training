@@ -92,7 +92,7 @@ def logisticregression_classify(data, labels, cv_folds, random_state=42):
         labels,
         classifier,
         param_grid,
-        cv_folds
+        cv_folds,
         random_state=random_state
     )
 
