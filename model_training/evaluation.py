@@ -40,7 +40,6 @@ def main(
 
     logger.info("Generating predictions...")
     y_pred = model.predict(X_test)
-    
     accuracy = accuracy_score(y_test, y_pred)
     conf_matrix = confusion_matrix(y_test, y_pred).tolist()
     class_report = classification_report(y_test, y_pred, output_dict=True)

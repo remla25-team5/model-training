@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 120
-exclude = __pycache__,.git,__init__.py,.venv,.env,data,notebooks,docs,build,dist,models,references,reports
+exclude = __pycache__,.git,__init__.py,.venv,.env,data,notebooks,docs,build,dist,models,references,reports,tests
 filename = *.py
 max-complexity = 12
 import-order-style = google

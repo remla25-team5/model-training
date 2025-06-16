@@ -157,6 +157,18 @@ This creates an HTML report in the `htmlcov` folder, which you can open in a bro
 flake8 --config=.flake8
 ```
 
+**Pylint**: Perform a more in-depth analysis of your code, checking for programming errors, enforcing coding standards, and looking for code smells. A custom pylint plugin is also added (pylint_plugins/random_state_checker.py), which checks the followinn smell: https://hynn01.github.io/ml-smells/posts/codesmells/14-randomness-uncontrolled/. 
+
+```bash
+pylint ./
+```
+
+**Bandit**: Scan your code for common security vulnerabilities.
+
+```bash
+bandit -c bandit.yaml -r .\ 
+```
+
 #### ML Test Score
 
 The testing framework also calculates an ML Test Score based on test results across different categories:

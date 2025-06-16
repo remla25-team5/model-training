@@ -58,6 +58,7 @@ ignore=CVS,
       references,
       docs,
       examples,
+      tests,
 
 # Add files or directories matching the regular expressions patterns to the
 # ignore-list. The regex matches against paths and can be in Posix or Windows
