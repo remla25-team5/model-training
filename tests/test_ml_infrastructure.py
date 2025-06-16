@@ -9,7 +9,7 @@ import sys
 import time
 
 from lib_ml.preprocessing import preprocess_dataset
-from model_training.modeling.train import gaussiannb_classify
+from model_training.modeling.train import logisticregression_classify
 from pathlib import Path
 
 # Test ML Infrastructure:
@@ -79,10 +79,10 @@ def test_training_reproducibility_same_seed(raw_dataset, load_vectorizer):
     features = load_vectorizer.fit_transform(corpus).toarray()
 
     # Train model1
-    best_score1, best_estimator1 = gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
+    best_score1, best_estimator1 = logisticregression_classify(features, labels, cv_folds=5, random_state=42)
 
     # Train model2
-    best_score2, best_estimator2 = gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
+    best_score2, best_estimator2 = logisticregression_classify(features, labels, cv_folds=5, random_state=42)
 
     # Results should be identical
     assert best_score1 == best_score2, f"Scores differ: {best_score1} vs {best_score2}"
@@ -92,7 +92,7 @@ def test_training_reproducibility_same_seed(raw_dataset, load_vectorizer):
     params2 = best_estimator2.get_params()
 
     # Check key parameters are identical
-    assert params1['classifier__var_smoothing'] == params2['classifier__var_smoothing']
+    assert params1['classifier__C'] == params2['classifier__C']
 
 
 # Infra 3: The full ML pipeline is integration tested

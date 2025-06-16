@@ -18,8 +18,8 @@ def test_create_pipeline_and_train_basic():
     check_is_fitted(estimator)
 
 
-def test_gaussiannb_classify_basic():
-    """Test the basic functionality of the gaussiannb_classify function."""
+def test_logisticregression_classify_basic():
+    """Test the basic functionality of the logisticregression_classify function."""
     np.random.seed(42)
     X = np.random.rand(20, 5)
     y = np.random.randint(0, 2, size=20)

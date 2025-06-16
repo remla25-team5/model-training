@@ -8,7 +8,7 @@ import requests
 import time
 
 from lib_ml.preprocessing import preprocess_dataset
-from model_training.modeling.train import gaussiannb_classify
+from model_training.modeling.train import logisticregression_classify
 from pathlib import Path
 
 # Test Monitoring:
@@ -105,7 +105,7 @@ def test_training_speed_performance(raw_dataset, performance_baseline, load_vect
     start_time = time.time()
 
     # Train model
-    gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
+    logisticregression_classify(features, labels, cv_folds=5, random_state=42)
 
     training_time = time.time() - start_time
     training_time_per_sample = training_time / len(raw_dataset)
@@ -225,7 +225,7 @@ def test_memory_usage_performance(raw_dataset, performance_baseline, load_vector
     # Measure memory during training
     training_stat_memory = process.memory_info().rss / 1024 / 1024
 
-    gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
+    logisticregression_classify(features, labels, cv_folds=5, random_state=42)
 
     training_end_memory = process.memory_info().rss / 1024 / 1024
     training_memory_usage = training_end_memory - training_stat_memory
