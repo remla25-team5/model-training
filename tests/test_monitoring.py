@@ -10,7 +10,6 @@ import time
 from lib_ml.preprocessing import preprocess_dataset
 from model_training.modeling.train import gaussiannb_classify
 from pathlib import Path
-# bandit: disable=B101  (asserts are fine in this test)
 
 # Test Monitoring:
 # Monitor 6: The model has not experienced a dramatic or slow-leak regressions in training speed,

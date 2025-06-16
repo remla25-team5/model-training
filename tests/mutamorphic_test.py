@@ -2,7 +2,6 @@ import joblib
 import pickle
 import pytest
 from pathlib import Path
-# bandit: disable=B101  (asserts are fine in this test)
 
 
 @pytest.fixture

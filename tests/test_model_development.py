@@ -7,7 +7,6 @@ import requests
 import time
 from sklearn.metrics import accuracy_score
 from lib_ml.preprocessing import preprocess_dataset
-# bandit: disable=B101  (asserts are fine in this test)
 
 # Test Model Development:
 # Model 6: Model quality is sufficient on all important data slices.
