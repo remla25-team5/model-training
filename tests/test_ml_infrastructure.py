@@ -102,6 +102,9 @@ def test_full_pipeline_integration():
     Integration test that runs the complete ML pipeline.
     Tests: dataset.py -> transform.py -> train.py -> evaluation.py
     """
+    train_model()
+
+def train_model(random_state: int | None = None):
     # Get the project root directory
     project_root = Path(__file__).parent.parent
 
@@ -121,7 +124,7 @@ def test_full_pipeline_integration():
     print("Step 2: Running transform.py...")
     result = subprocess.run([
         sys.executable, "-m", "model_training.transform"
-    ], cwd=project_root, capture_output=True, text=True)
+    ] + ([] if random_state is None else ["--random-state", str(random_state)]), cwd=project_root, capture_output=True, text=True)
 
     assert result.returncode == 0, f"transform.py failed: {result.stderr}"
 
@@ -200,3 +203,13 @@ def test_full_pipeline_integration():
     assert 'accuracy' in metrics, "Accuracy not found in metrics"
     assert isinstance(metrics['accuracy'], float), "Accuracy should be a float"
     assert 0 <= metrics['accuracy'] <= 1, "Accuracy out of bounds (0-1)"
+    return metrics['accuracy']
+
+def test_nondeterminism_robustness():
+    model_variants = []
+    for seed in [1, 2]:
+        model_variant = train_model(random_state = seed)
+        model_variants.append(model_variant)
+    original_score = train_model()
+    for model_variant in model_variants:
+        assert abs(original_score - model_variant) <= 0.03

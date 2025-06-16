@@ -5,8 +5,11 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 
 from lib_ml.preprocessing import preprocess_dataset
+import typer
 
+app = typer.Typer()
 
+@app.command()
 def main(
     input_path: Path = Path(__file__).parent.parent / "data/raw/a1_RestaurantReviews_HistoricDump.tsv",
     vectorizer_path: Path = Path(__file__).parent.parent / "models/c1_BoW_Sentiment_Model.pkl",
@@ -61,4 +64,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    app()
