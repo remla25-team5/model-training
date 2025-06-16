@@ -75,7 +75,7 @@ def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds, ra
 
 #     return best_score, best_estimator
 
-def logisticregression_classify(data, labels, cv_folds):
+def logisticregression_classify(data, labels, cv_folds, random_state=42):
     """
     Trains a LogisticRegression classifier using the specified parameter grid.
 
@@ -93,6 +93,7 @@ def logisticregression_classify(data, labels, cv_folds):
         classifier,
         param_grid,
         cv_folds
+        random_state=random_state
     )
 
     return best_score, best_estimator
