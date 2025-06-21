@@ -2,9 +2,11 @@ import pickle
 from pathlib import Path
 import joblib
 
+# from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.pipeline import Pipeline
-from sklearn.naive_bayes import GaussianNB
+# from sklearn.naive_bayes import GaussianNB
 # You can import and use other models similarly:
 # from sklearn.linear_model import SGDClassifier, LogisticRegression
 # from sklearn.ensemble import RandomForestClassifier
@@ -51,15 +53,38 @@ def create_pipeline_and_train(data, labels, classifier, param_grid, cv_folds, ra
     return best_score, best_estimator
 
 
-def gaussiannb_classify(data, labels, cv_folds, random_state=42):
-    """
-    Trains a Gaussian Naive Bayes classifier using the specified parameter grid.
+# def gaussiannb_classify(data, labels, cv_folds, random_state=42):
+#     """
+#     Trains a Gaussian Naive Bayes classifier using the specified parameter grid.
 
-    Returns the best score and the best trained GaussianNB model.
+#     Returns the best score and the best trained GaussianNB model.
+#     """
+#     classifier = GaussianNB()
+#     param_grid = {
+#         'classifier__var_smoothing': [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
+#     }
+
+#     best_score, best_estimator = create_pipeline_and_train(
+#         data,
+#         labels,
+#         classifier,
+#         param_grid,
+#         cv_folds,
+#         random_state=random_state
+#     )
+
+#     return best_score, best_estimator
+
+def logisticregression_classify(data, labels, cv_folds, random_state=42):
     """
-    classifier = GaussianNB()
+    Trains a LogisticRegression classifier using the specified parameter grid.
+
+    Returns the best score and the best trained LogisticRegression model.
+    """
+    classifier = LogisticRegression(random_state=42, max_iter=1000)
     param_grid = {
-        'classifier__var_smoothing': [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
+        'classifier__C': [0.1, 1, 10, 100],
+        'classifier__solver': ['liblinear', 'saga']
     }
 
     best_score, best_estimator = create_pipeline_and_train(
@@ -81,7 +106,7 @@ def main(
     metrics_path: Path = Path(__file__).parent.parent.parent / "metrics.json",
 ):
     """
-    Loads training data, trains a GaussianNB model, and saves the model and metrics.
+    Loads training data, trains a Logistic Regression model, and saves the model and metrics.
     """
     logger.info("Loading data and labels...")
     with open(data_path, "rb") as f:
@@ -89,8 +114,8 @@ def main(
     with open(labels_path, "rb") as f:
         labels = pickle.load(f)
 
-    logger.info("Starting training with GaussianNB...")
-    best_score, best_estimator = gaussiannb_classify(data, labels, cv_folds=5)
+    logger.info("Starting training with Logistic Regression...")
+    best_score, best_estimator = logisticregression_classify(data, labels, cv_folds=5)
 
     model_out_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(best_estimator, model_out_path)

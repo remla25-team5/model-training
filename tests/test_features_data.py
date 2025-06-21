@@ -7,7 +7,6 @@ import time
 
 from pathlib import Path
 
-# bandit: disable=B101  (asserts are fine in this test)
 
 # Test Features and Data:
 # 1. Test that the distributions of each feature match our expectations.

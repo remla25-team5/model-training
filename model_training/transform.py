@@ -9,6 +9,7 @@ import typer
 
 app = typer.Typer()
 
+
 @app.command()
 def main(
     input_path: Path = Path(__file__).parent.parent / "data/raw/a1_RestaurantReviews_HistoricDump.tsv",

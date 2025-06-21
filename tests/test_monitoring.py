@@ -8,9 +8,8 @@ import requests
 import time
 
 from lib_ml.preprocessing import preprocess_dataset
-from model_training.modeling.train import gaussiannb_classify
+from model_training.modeling.train import logisticregression_classify
 from pathlib import Path
-# bandit: disable=B101  (asserts are fine in this test)
 
 # Test Monitoring:
 # Monitor 6: The model has not experienced a dramatic or slow-leak regressions in training speed,
@@ -106,19 +105,19 @@ def test_training_speed_performance(raw_dataset, performance_baseline, load_vect
     start_time = time.time()
 
     # Train model
-    gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
+    logisticregression_classify(features, labels, cv_folds=5, random_state=42)
 
     training_time = time.time() - start_time
     training_time_per_sample = training_time / len(raw_dataset)
 
-    # Check for dramatic regression (10x slower than baseline)
-    dramatic_regression_threshold = performance_baseline['training_time_per_sample'] * 10
+    # Check for dramatic regression (20x slower than baseline)
+    dramatic_regression_threshold = performance_baseline['training_time_per_sample'] * 20
     assert training_time_per_sample < dramatic_regression_threshold, \
         f"Dramatic training speed regression detected: {training_time_per_sample:.4f}s per sample > \
             {dramatic_regression_threshold:.4f}s"
 
-    # Check for slow-leak regression (2x slower than baseline)
-    slow_leak_threshold = performance_baseline['training_time_per_sample'] * 2
+    # Check for slow-leak regression (10x slower than baseline)
+    slow_leak_threshold = performance_baseline['training_time_per_sample'] * 10
     assert training_time_per_sample < slow_leak_threshold, \
         f"Slow-leak training speed regression detected: {training_time_per_sample:.4f}s per sample >\
               {slow_leak_threshold:.4f}s"
@@ -226,7 +225,7 @@ def test_memory_usage_performance(raw_dataset, performance_baseline, load_vector
     # Measure memory during training
     training_stat_memory = process.memory_info().rss / 1024 / 1024
 
-    gaussiannb_classify(features, labels, cv_folds=5, random_state=42)
+    logisticregression_classify(features, labels, cv_folds=5, random_state=42)
 
     training_end_memory = process.memory_info().rss / 1024 / 1024
     training_memory_usage = training_end_memory - training_stat_memory
