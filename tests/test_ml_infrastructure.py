@@ -206,9 +206,9 @@ def train_model(random_state: int | None = None):
 
 def test_nondeterminism_robustness():
     model_variants = []
-    for seed in [1, 2]:
+    for seed in [42, 123]:
         model_variant = train_model(random_state = seed)
         model_variants.append(model_variant)
     original_score = train_model()
     for model_variant in model_variants:
-        assert abs(original_score - model_variant) <= 1
+        assert abs(original_score - model_variant) <= 0.03
