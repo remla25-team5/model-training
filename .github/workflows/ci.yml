@@ -20,7 +20,7 @@ jobs:
         run: uv sync --locked --all-extras --dev
       - name: Analysing the code with pylint
         run: |
-          uv run pylint $(git ls-files '*.py') --output-format=json2:somefile.json,colorized
+          uv run pylint . --output-format=json2:somefile.json,colorized
         continue-on-error: true #
       - name: pylint score
         run: |
@@ -46,7 +46,7 @@ jobs:
       - name: Run Bandit
         run: |
           BANDIT_OUTPUT="bandit_output.json"
-          uv run bandit -c bandit.yaml -r $(git ls-files '*.py') \
+          uv run bandit -c bandit.yaml -r . \
                         -f json -o "$BANDIT_OUTPUT" || true
 
           BANDIT_ISSUES=$(jq '.results | length' "$BANDIT_OUTPUT")
