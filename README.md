@@ -1,5 +1,5 @@
 ![test coverage](https://img.shields.io/badge/test%20coverage-98%25-green.svg)
-![pylint score](https://img.shields.io/badge/pylint%20score-9.14-green.svg)
+![pylint score](https://img.shields.io/badge/pylint%20score-10.0-green.svg)
 ![flake8](https://img.shields.io/badge/flake8-0%20issues-brightgreen.svg)
 ![bandit](https://img.shields.io/badge/bandit-0%20issues-brightgreen.svg)
 ![ml score](https://img.shields.io/badge/ml%20score-1-blue.svg)
